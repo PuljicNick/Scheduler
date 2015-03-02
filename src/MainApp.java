@@ -269,8 +269,14 @@ public class MainApp extends Application {
      */
     private void generateGames() {
         games = new ArrayList<>();
-        
 
+        for (int i = 0; i < teams.size(); i++) {
+            for (int j = 0; j < i+1; j++) {
+                if(i != j) {
+                    games.add(new Game(teams.get(i), teams.get(j)));
+                }
+            }
+        }
     }
 
     /*
@@ -279,6 +285,12 @@ public class MainApp extends Application {
      */
     private void assignGameDates() {
 
+        for (int i = 0; i < games.size(); i++) {
+            int j = gameDates.size();
+            for (int m = 0; m < j; m++) {
+                games.get(i).setDate(gameDates.get(j));
+            }
+        }
     }
 
 
