@@ -273,7 +273,10 @@ public class MainApp extends Application {
         for (int i = 0; i < teams.size(); i++) {
             for (int j = 0; j < i+1; j++) {
                 if(i != j) {
-                    games.add(new Game(teams.get(i), teams.get(j)));
+                    if (countHomeGames(teams.get(i)) < countHomeGames(teams.get(j))) {
+                        games.add(new Game(teams.get(i), teams.get(j)));
+                    } else
+                        games.add(new Game(teams.get(j), teams.get(i)));
                 }
             }
         }
@@ -284,11 +287,18 @@ public class MainApp extends Application {
     The fewest number fo dates possible should be used.
      */
     private void assignGameDates() {
+        int j = 0;
 
         for (int i = 0; i < games.size(); i++) {
-            int j = gameDates.size();
-            for (int m = 0; m < j; m++) {
+            if ( hasGameOnDate(games.get(i).getAwayTeam(), gameDates.get(j)) && hasGameOnDate(games.get(i).getHomeTeam(), gameDates.get(j)) == true) {
                 games.get(i).setDate(gameDates.get(j));
+                j=0;
+            } else {
+                if (j == gameDates.size()) {
+                    j = -1;
+                }
+                j++;
+                i--;
             }
         }
     }
@@ -507,6 +517,29 @@ public class MainApp extends Application {
         }
 
         return p;
+    }
+
+    private int countHomeGames(String team) {
+        int p = 0;
+
+        for (Game game : games) {
+            if (game.getHomeTeam().equals(team))
+                p++;
+        }
+
+        return p;
+    }
+
+    private boolean hasGameOnDate(String team, LocalDate date) {
+        for (Game game : games) {
+            if (game.isScheduled() && game.getDate().equals(date) &&
+                        (game.getHomeTeam().equals(team) ||
+                                game.getAwayTeam().equals(team)))
+                return false;
+            else
+                return true;
+        }
+        return true;
     }
 
     /* calculate the points of a team  */
