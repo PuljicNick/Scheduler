@@ -270,10 +270,10 @@ public class MainApp extends Application {
     private void generateGames() {
         games = new ArrayList<>();
 
-        for (int i = 0; i < teams.size(); i++) {
-            for (int j = 0; j < i+1; j++) {
+        for (int i = 0; i < teams.size()-1; i++) {
+            for (int j = i+1; j < teams.size(); j++) {
                 if(i != j) {
-                    if (countHomeGames(teams.get(i)) < countHomeGames(teams.get(j))) {
+                    if (Math.random() < .5) {
                         games.add(new Game(teams.get(i), teams.get(j)));
                     } else
                         games.add(new Game(teams.get(j), teams.get(i)));
@@ -292,13 +292,22 @@ public class MainApp extends Application {
         for (int i = 0; i < games.size(); i++) {
             if ( hasGameOnDate(games.get(i).getAwayTeam(), gameDates.get(j)) && hasGameOnDate(games.get(i).getHomeTeam(), gameDates.get(j)) == true) {
                 games.get(i).setDate(gameDates.get(j));
-                j=0;
+                j++;
             } else {
-                if (j == gameDates.size()) {
-                    j = -1;
-                }
                 j++;
                 i--;
+            }
+            if (teams.size() % 2 == 0) {
+                if( j > (teams.size() - 2)) {
+                    j=0;
+                }
+            } else if (teams.size() % 2 == 1) {
+                if( j > teams.size()-1){
+                    j=0;
+                }
+            }
+            if (j >= gameDates.size()) {
+                j=0;
             }
         }
     }
@@ -533,11 +542,9 @@ public class MainApp extends Application {
     private boolean hasGameOnDate(String team, LocalDate date) {
         for (Game game : games) {
             if (game.isScheduled() && game.getDate().equals(date) &&
-                        (game.getHomeTeam().equals(team) ||
-                                game.getAwayTeam().equals(team)))
+                    ((game.getHomeTeam().equals(team) ||
+                                game.getAwayTeam().equals(team))))
                 return false;
-            else
-                return true;
         }
         return true;
     }
